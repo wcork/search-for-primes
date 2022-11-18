@@ -1,9 +1,9 @@
 import multiprocessing as mp
 import time
 import sys
+import argparse
+from typing import List
 
-# max number to look up to
-max_number = 10000
 # four processes per cpu
 num_processes = mp.cpu_count() * 4
 
@@ -17,7 +17,7 @@ def chunks(seq, chunks):
         start = stop
 
 
-def calc_primes(numbers):
+def calc_primes(numbers: List[int]) -> int:
     num_primes = 0
     primes = []
 
@@ -34,18 +34,34 @@ def calc_primes(numbers):
     return num_primes
 
 
+def calc_sexy_prime_pairs(numbers: List[int]) -> int:
+    """
+    TODO:
+    A sexy prime pair are primes that are exactly 6
+    see https://en.wikipedia.org/wiki/Sexy_prime
+    :param numbers:
+    :return:
+    """
+    assert 'not implemented'
+    return 0
+
+
 def main():
-    print(num_processes)
-    if len(sys.argv) > 1:
-        max_number = int(sys.argv[1])
+    parser = argparse.ArgumentParser('CLI tool to identify primes given a range')
+    # parser.add_argument('-s', '--sexy', action='store_true', help='instead of normal primes, find more sexy ones')
+    parser.add_argument('-b', '--beginning', type=int, help='beginning of search range', default=2)
+    parser.add_argument('-e', '--end', type=int, help='end of search range', default=10000)
+
+    args = parser.parse_args()
+    starting_number = args['sexy']
+    max_number = args['end']
 
     # Record the test start time
     start = time.time()
 
     pool = mp.Pool(num_processes)
 
-    # 0 and 1 are not primes
-    parts = chunks(range(2, max_number, 1), num_processes)
+    parts = chunks(range(starting_number, max_number, 1), num_processes)
     # run the calculation
     results = pool.map(calc_primes, parts)
     total_primes = sum(results)
